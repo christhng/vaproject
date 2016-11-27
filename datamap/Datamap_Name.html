@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <title>example_datamap</title>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="topojson/topojson.js"></script>
+  <script src="datamaps.world.hires.min.js"></script>
+  <script>
+function showInput(){
+        var user_input_name
+        document.getElementById('display').innerHTML = document.getElementById('user_input').value;
+        var user_input_name=document.getElementById("user_input").value;
+        console.log(user_input_name);
+        var bombMap = new Datamap({
+            element: document.getElementById('container'),
+            scope: 'world',
+            geographyConfig: {
+            popupOnHover: false,
+            highlightOnHover: false
+                },
+                fills: {
+                'USA': '#1f77b4',
+                'SPN': '#d63738',
+                'FRA': '#d63738',
+                'DEU': '#d62728',
+                'JPN': '#ff7f0e',
+        defaultFill: '#EDDC4E'
+              },
+                data: {
+                'FRA': {fillKey: 'FRA'},
+                'JPN': {fillKey: 'JPN'},
+                'USA': {fillKey: 'USA'}
+              }
+        });
+        var dataset={};
+          d3.csv("name_sales.csv",function(error,d){
+                  
+                  if (error) {  //If error is not null, something went wrong.
+                    console.log(error);  //Log the error.
+                  } else {      //If no error, the file loaded correctly. Yay!
+                    console.log(d);   //Log the data.
+                    dataset=d;
+                  }
+                    for (i=1;i<d.length;i++){
+                      if (dataset[i].Name==user_input_name){
+                        var radius_NA=dataset[i].NA_sales*10;
+                        var radius_NA1=dataset[i].NA_sales;
+                        var radius_EU=dataset[i].EU_sales*10;
+                        var radius_JP=dataset[i].JP_sales*10;
+                        var radius_other=dataset[i].other_sales*10;
+                        var radius_EU1=dataset[i].EU_sales;
+                        var radius_JP1=dataset[i].JP_sales;
+                        var radius_other1=dataset[i].other_sales;
+                      }
+                    }
+                  console.log(dataset[3].Name);
+                  console.log(radius_NA1);
+              var bombs = [{
+                  name: 'EU',
+                  radius:radius_EU,       
+                  yield:radius_EU1,        
+                  country: 'FRA',
+                  fillKey: 'FRA',
+                  latitude: 46.07,
+                  longitude: 2.43
+                },{
+                  name: 'NA',
+                  radius: radius_NA,
+                  yield: radius_NA1,
+                  country: 'USA',
+                  fillKey: 'USA',
+                  latitude: 37.07,
+                  longitude: -95.43
+          
+                },{
+                  name: 'JP',
+                  radius: radius_JP,
+                  yield: radius_JP1,
+                  country: 'JPN',
+                  fillKey: 'JPN',
+                  latitude: 36.482,
+                  longitude: 138.5854
+                },{
+                  name: 'Other',
+                  radius: radius_other,
+                  yield: radius_other/10,
+                  country: 'CHN',
+                  fillKey: 'RUS',
+                  latitude: 23.482,
+                  longitude: 50.5854
+                }
+              ];
+          //draw bubbles for bombs
+bombMap.bubbles(bombs, {
+    popupTemplate: function (geo, data) {
+            return ['<div class="hoverinfo">' +  data.name,
+            '<br/>Revenue: ' +  data.yield + ' in millions',
+            '<br/>Country: ' +  data.country + '',
+            '</div>'].join('');
+    }
+});
+});
+};
+</script>
+  </head>
+  <body>
+    <form id='form1'>
+    <label><b>Enter keyword</b></label>
+    <input type="text" name="Name" id="user_input">
+    </form>
+
+  <input type="submit" onclick="showInput();"><br/>
+  <label>Your input: </label>
+  <p><span id='display'></span></p>
+    <div id="container" style="position: relative; width: 1000px; height: 500px;"></div>  
+
+</body>
+</html>
+
